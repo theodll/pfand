@@ -70,6 +70,16 @@ export default function Home() {
   const loadTransactions = async () => {
     if (!currentUser) return;
     
+    // If supabase is not configured, use localStorage only
+    if (!supabase) {
+      const saved = localStorage.getItem('pfandTransactions_shared');
+      if (saved) {
+        setTransactions(JSON.parse(saved));
+      }
+      setIsOnline(false);
+      return;
+    }
+    
     try {
       const { data, error } = await supabase
         .from('transactions')
@@ -122,7 +132,12 @@ export default function Home() {
     localStorage.setItem('pfandTransactions_shared', JSON.stringify(newTransactions));
     setCount(0);
 
-    // Sync to Supabase
+    // Sync to Supabase if available
+    if (!supabase) {
+      setIsOnline(false);
+      return;
+    }
+    
     try {
       const { error } = await supabase
         .from('transactions')
@@ -183,7 +198,12 @@ export default function Home() {
     setPendingWithdrawAmount(0);
     setModalBottleCount('');
 
-    // Sync to Supabase
+    // Sync to Supabase if available
+    if (!supabase) {
+      setIsOnline(false);
+      return;
+    }
+    
     try {
       const { error } = await supabase
         .from('transactions')
@@ -206,7 +226,9 @@ export default function Home() {
       setTransactions([]);
       localStorage.removeItem('pfandTransactions_shared');
       
-      // Clear from Supabase
+      // Clear from Supabase if available
+      if (!supabase) return;
+      
       try {
         const { error } = await supabase
           .from('transactions')
@@ -229,7 +251,9 @@ export default function Home() {
       setWithdrawAmount('');
       localStorage.removeItem('pfandTransactions_shared');
       
-      // Clear from Supabase
+      // Clear from Supabase if available
+      if (!supabase) return;
+      
       try {
         const { error } = await supabase
           .from('transactions')
