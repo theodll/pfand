@@ -1,0 +1,6 @@
+name = "pfand"
+compatibility_date = "2025-12-10"
+pages_build_output_dir = "out"
+
+[env.production]
+vars = { NODE_ENV = "production" }
