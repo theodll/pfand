@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getStoredUser, clearStoredUser } from '@/lib/auth';
 import Login from '@/components/Login';
+import { useTheme } from '@/components/ThemeProvider';
 import { t } from '@/lib/translations';
 import { 
   Wine, 
@@ -17,7 +18,9 @@ import {
   Trash2,
   Euro,
   ArrowDownToLine,
-  History as HistoryIcon
+  History as HistoryIcon,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface Transaction {
@@ -30,7 +33,14 @@ interface Transaction {
 }
 
 export default function Home() {
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const { theme, toggleTheme } = useTheme();
+  const [currentUser, setCurrentUser] = useState<string | null>(() => {
+    // Initialize from stored user on mount
+    if (typeof window !== 'undefined') {
+      return getStoredUser();
+    }
+    return null;
+  });
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [count, setCount] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -40,34 +50,7 @@ export default function Home() {
   const [isOnline, setIsOnline] = useState(true);
   const PFAND_VALUE = 0.25; // Standard Einweg pfand
 
-  // Check for stored user on mount
-  useEffect(() => {
-    const user = getStoredUser();
-    if (user) {
-      setCurrentUser(user);
-    }
-  }, []);
-
-  // Load transactions from Supabase when user is logged in
-  useEffect(() => {
-    if (currentUser) {
-      loadTransactions();
-    }
-  }, [currentUser]);
-
-  const handleLogin = (username: string) => {
-    setCurrentUser(username);
-  };
-
-  const handleLogout = () => {
-    clearStoredUser();
-    setCurrentUser(null);
-    setTransactions([]);
-    setCount(0);
-    setWithdrawAmount('');
-  };
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!currentUser) return;
     
     // If supabase is not configured, use localStorage only
@@ -109,6 +92,26 @@ export default function Home() {
       }
       setIsOnline(false);
     }
+  }, [currentUser]);
+
+  // Load transactions from Supabase when user is logged in
+  useEffect(() => {
+    if (currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadTransactions();
+    }
+  }, [currentUser, loadTransactions]);
+
+  const handleLogin = (username: string) => {
+    setCurrentUser(username);
+  };
+
+  const handleLogout = () => {
+    clearStoredUser();
+    setCurrentUser(null);
+    setTransactions([]);
+    setCount(0);
+    setWithdrawAmount('');
   };
 
   const addPfand = async (amount: number) => {
@@ -340,6 +343,17 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={toggleTheme}
+                    className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-colors flex items-center gap-2"
+                    title={theme === 'light' ? t('darkTheme') : t('lightTheme')}
+                  >
+                    {theme === 'light' ? (
+                      <Moon className="w-4 h-4" />
+                    ) : (
+                      <Sun className="w-4 h-4" />
+                    )}
+                  </button>
                   <button
                     onClick={handleLogout}
                     className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-colors flex items-center gap-2"
