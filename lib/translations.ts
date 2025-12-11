@@ -66,6 +66,10 @@ interface Translations {
   clearHistoryConfirm: string;
   resetConfirm: string;
   invalidBottles: string;
+
+  // Theme
+  lightTheme: string;
+  darkTheme: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -133,6 +137,10 @@ const translations: Record<Language, Translations> = {
     clearHistoryConfirm: 'Clear all transaction history?',
     resetConfirm: 'Reset everything? This will clear all data.',
     invalidBottles: 'Please enter a valid number of bottles (0-{max})',
+
+    // Theme
+    lightTheme: 'Light Theme',
+    darkTheme: 'Dark Theme',
   },
   de: {
     // Login
@@ -198,6 +206,10 @@ const translations: Record<Language, Translations> = {
     clearHistoryConfirm: 'Gesamte Transaktionshistorie löschen?',
     resetConfirm: 'Alles zurücksetzen? Dies löscht alle Daten.',
     invalidBottles: 'Bitte gib eine gültige Anzahl an Flaschen ein (0-{max})',
+
+    // Theme
+    lightTheme: 'Helles Design',
+    darkTheme: 'Dunkles Design',
   },
 };
 
