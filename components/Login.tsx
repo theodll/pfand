@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { validateUser, setStoredUser, USERS } from '@/lib/auth';
+import { useTheme } from '@/components/ThemeProvider';
 import { t } from '@/lib/translations';
-import { Wine, Eye, EyeOff, LogIn } from 'lucide-react';
+import { Wine, Eye, EyeOff, LogIn, Sun, Moon } from 'lucide-react';
 
 interface LoginProps {
   onLogin: (username: string) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
+  const { theme, toggleTheme } = useTheme();
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [error, setError] = useState('');
@@ -35,6 +37,19 @@ export default function Login({ onLogin }: LoginProps) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
+        <div className="absolute top-4 right-4">
+          <button
+            onClick={toggleTheme}
+            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-colors flex items-center gap-2"
+            title={theme === 'light' ? t('darkTheme') : t('lightTheme')}
+          >
+            {theme === 'light' ? (
+              <Moon className="w-4 h-4" />
+            ) : (
+              <Sun className="w-4 h-4" />
+            )}
+          </button>
+        </div>
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 mb-4">
             <Wine className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
